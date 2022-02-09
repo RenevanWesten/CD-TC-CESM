@@ -1,4 +1,4 @@
-# GRL-TC_CESM
+# GRL-TC-CESM
 
 How a Weaker AMOC Reduces North Atlantic Tropical Cyclones in the North Atlantic, Submitted to Geophysical Research Letters
 

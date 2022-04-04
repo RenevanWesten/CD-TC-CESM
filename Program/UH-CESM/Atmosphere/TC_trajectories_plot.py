@@ -123,11 +123,6 @@ for ensemble_i in range(len(ensemble_number)):
 cbar	= m.colorbar(line, ax=ax, extend = 'both', ticks = np.arange(20, 70.1, 10))
 cbar.set_label('Maximum wind speed (m s$^{-1}$)')
 
-ax.set_title('a) UH-CESM$^{\mathrm{PD}}$')
-#ax.set_title('b) UH-CESM$^{\mathrm{F}}$')
-#ax.set_title('a) Tropical cyclone trajectories, 2003 - 2007')
-#ax.set_title('b) Tropical cyclone trajectories, 2093 - 2097')
-
 if period == 'PRESENT': 
 	ax.set_title('a) UH-CESM$^{\mathrm{PD}}$')
 if period == 'FUTURE': 

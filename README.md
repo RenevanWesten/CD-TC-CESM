@@ -10,4 +10,4 @@ Python scripts can be found in the directory 'Program'.
 Model output can be found in the directory 'Data'.
 
 The model output are stored as NETCDF files, most output is converted to seasonally and/or yearly averages for data storage.
-Only for the genesis potential index (GPI) and zonal mean atmospheric temperature, the entire present-day and future ensemble mean is already determined.
+Only for the genesis potential index (GPI) and the zonally-averaged atmospheric temperature, the entire present-day and future ensemble mean is already determined. The present-day sea surface temperature biases with respect to ERA5 are also determined and interpolated to the ERA5 grid.

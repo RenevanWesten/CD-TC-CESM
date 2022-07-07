@@ -172,7 +172,7 @@ for lat_i in range(len(lat)):
 		
 cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.16, 0.05))
 cbar.set_label('TC genesis PDF')
-ax.set_title('b) Western Pacific, UH-CESM$^{\mathrm{PD}}$')
+ax.set_title('a) Western Pacific, UH-CESM$^{\mathrm{PD}}$')
 
 #-----------------------------------------------------------------------------------------
 
@@ -202,7 +202,7 @@ for lat_i in range(len(lat)):
 		
 cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.16, 0.05))
 cbar.set_label('TC genesis PDF')
-ax.set_title('d) Western Pacific, UH-CESM$^{\mathrm{F}}$')
+ax.set_title('b) Western Pacific, UH-CESM$^{\mathrm{F}}$')
 
 show()
 

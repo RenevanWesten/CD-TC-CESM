@@ -204,7 +204,7 @@ for lat_i in range(len(lat)):
 		
 cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.16, 0.05))
 cbar.set_label('TC genesis PDF')
-ax.set_title('c) North Atlantic, UH-CESM$^{\mathrm{F}}$ ')
+ax.set_title('b) North Atlantic, UH-CESM$^{\mathrm{F}}$ ')
 
 show()
 

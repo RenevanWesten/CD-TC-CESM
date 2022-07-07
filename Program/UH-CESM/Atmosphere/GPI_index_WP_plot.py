@@ -158,7 +158,7 @@ graph_3			= mpatches.Patch(facecolor='royalblue', label=r'$\Delta V_{pot}$ only'
 graph_4			= mpatches.Patch(facecolor='firebrick', label=r'$\Delta \mathrm{VWS}$ only')
 
 ax.legend(handles=[graph_present, graph_future, graph_1, graph_2, graph_3, graph_4], loc='upper left', ncol=1)
-ax.set_title('h) GPI MDR, Western Pacific') 	
+ax.set_title('d) GPI MDR, Western Pacific') 	
 	
 #-----------------------------------------------------------------------------------------
 GPI_diff_plot		= (GPI_future_plot - GPI_present_plot) / GPI_present_plot
@@ -185,7 +185,7 @@ cbar	= m.colorbar(CS, ticks = [-0.92, -0.72, -0.52, -0.4, -0.2, 0, 0.2, 0.4, 0.5
 cbar.ax.set_yticklabels([-3, -2, -1, -0.4, -0.2, 0, 0.2, 0.4, 1, 2, 3])
 cbar.set_label('Genesis Potential Index relative difference')
 
-ax.set_title('b) Genesis Potential Index, $\Delta$UH-CESM')
+ax.set_title('c) Genesis Potential Index, $\Delta$UH-CESM')
 
 #-----------------------------------------------------------------------------------------
 
@@ -210,7 +210,7 @@ CS	= contourf(x, y, RH_future_plot - RH_present_plot, levels = np.arange(-10, 10
 cbar	= m.colorbar(CS, ticks = np.arange(-10, 10.1, 5))
 cbar.set_label('Relative humidity difference ($\%$)')
 
-ax.set_title('f) 700 hPa Relative humidity, $\Delta$UH-CESM')
+ax.set_title('g) 700 hPa Relative humidity, $\Delta$UH-CESM')
 
 #-----------------------------------------------------------------------------------------
 
@@ -229,6 +229,6 @@ CS	= contourf(x, y, v_pot_future_plot - v_pot_present_plot, levels = np.arange(-
 cbar	= m.colorbar(CS, ticks = np.arange(-10, 10.1, 2))
 cbar.set_label('Potential intensity difference (m s$^{-1}$)')
 
-ax.set_title('d) Potential intensity, $\Delta$UH-CESM')
+ax.set_title('e) Potential intensity, $\Delta$UH-CESM')
 
 show()

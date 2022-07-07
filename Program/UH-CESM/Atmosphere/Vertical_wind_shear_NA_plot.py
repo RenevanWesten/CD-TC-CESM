@@ -58,76 +58,6 @@ u_vel_plot			= u_vel_future_plot - u_vel_present_plot
 
 #-----------------------------------------------------------------------------------------
 
-fig, ax	= subplots(figsize = (8, 6))
-
-m = Basemap(projection = 'merc', llcrnrlat=-3, urcrnrlat=61, llcrnrlon=250, urcrnrlon=360.0001, resolution='i') 
-m.drawcoastlines()
-#m.fillcontinents(color='#cc9966',lake_color='#99ffff')
-
-par = m.drawparallels(np.arange(-80,80,10),labels=[1,0,0,0])
-mer = m.drawmeridians(np.arange(0,360.1,20),labels=[0,0,0,1])
-
-#Set mask
-x_field	= [250, 360]
-y_field	= [-5, 65]
-x_field, y_field	= m(x_field, y_field)
-ax.fill_between(x_field, y_field[0], y_field[-1], facecolor='#cc9966')
-
-x, y	= np.meshgrid(lon, lat)
-x, y	= m(x, y)
-CS	= contourf(x, y, u_vel_present_plot, levels = np.arange(0, 25.1, 0.5), extend = 'max', cmap = 'Spectral_r')
-cbar	= m.colorbar(CS, ticks = np.arange(0, 25.1, 5))
-cbar.set_label('Zonal vertical wind shear (m s$^{-1}$)')
-CS2	= m.contour(x, y, u_vel_present_plot, levels = [12.5], colors = 'gray', linewidths = 2.5)
-
-CS1	= m.plot([-1, -1], [-1, -1], '-', color = 'gray', linewidth = 2.5, label = '12.5 m s$^{-1}$')
-graphs	= CS1
-
-legend_labels = [l.get_label() for l in graphs]
-legend_1      = ax.legend(graphs, legend_labels, loc = 'upper left', ncol=1, numpoints = 1)
-
-
-ax.set_title('c) UH-CESM$^{\mathrm{PD}}$, June - November')
-
-#-----------------------------------------------------------------------------------------
-
-
-fig, ax	= subplots(figsize = (8.2, 6))
-
-m = Basemap(projection = 'merc', llcrnrlat=-3, urcrnrlat=61, llcrnrlon=250, urcrnrlon=360.0001, resolution='i') 
-m.drawcoastlines()
-#m.fillcontinents(color='#cc9966',lake_color='#99ffff')
-
-par = m.drawparallels(np.arange(-80,80,10),labels=[1,0,0,0])
-mer = m.drawmeridians(np.arange(0,360.1,20),labels=[0,0,0,1])
-
-#Set mask
-x_field	= [250, 360]
-y_field	= [-5, 65]
-x_field, y_field	= m(x_field, y_field)
-ax.fill_between(x_field, y_field[0], y_field[-1], facecolor='#cc9966')
-
-
-x, y	= np.meshgrid(lon, lat)
-x, y	= m(x, y)
-CS	= contourf(x, y, u_vel_future_plot - u_vel_present_plot, levels = np.arange(-5, 5.1, 0.1), extend = 'both', cmap = 'RdBu_r')
-cbar	= m.colorbar(CS, ticks = np.arange(-5, 5.1, 1))
-cbar.set_label('Zonal vertical wind shear difference (m s$^{-1}$)')
-CS_2	= m.contour(x, y, u_vel_present_plot, levels = [12.5], colors = 'gray', linewidths = 2.5, label = '10')
-CS_3	= m.contour(x, y, u_vel_future_plot, levels = [12.5], colors = 'k', linewidths = 2.5, label = '10')
-
-CS1	= m.plot([-1, -1], [-1, -1], linestyle = '-', color = 'gray', linewidth = 2.5, label = '12.5 m s$^{-1}$ (PD)')
-CS2	= m.plot([-1, -1], [-1, -1], '-k', linewidth = 2.5, label = '12.5 m s$^{-1}$ (F)')
-
-graphs	= CS1 + CS2
-
-legend_labels = [l.get_label() for l in graphs]
-legend_1      = ax.legend(graphs, legend_labels, loc = 'upper left', ncol=1, numpoints = 1)
-
-ax.set_title('a) Zonal vertical wind shear, June - November')
-
-#-----------------------------------------------------------------------------------------
-
 
 fig, ax	= subplots(figsize = (8, 6))
 
@@ -160,7 +90,7 @@ graphs	= CS1 + CS2
 legend_labels = [l.get_label() for l in graphs]
 legend_1      = ax.legend(graphs, legend_labels, loc = 'upper left', ncol=1, numpoints = 1)
 
-ax.set_title('a) Zonal vertical wind shear, $\Delta$UH-CESM, June - November')
+ax.set_title('f) Zonal vertical wind shear, $\Delta$UH-CESM')
 
 show()
 

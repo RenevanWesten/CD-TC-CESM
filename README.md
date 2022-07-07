@@ -1,6 +1,6 @@
-# GRL-TC-CESM
+# CD-TC-CESM
 
-How a Weaker AMOC Reduces North Atlantic Tropical Cyclones in the North Atlantic, Submitted to Geophysical Research Letters
+Mechanisms of Tropical Cyclone Response under Climate Change in the Community Earth System Model, submitted to Climate Dynamics (7 July 2022)
 
 René M. van Westen, Henk A. Dijkstra and Nadia Bloemendaal
 

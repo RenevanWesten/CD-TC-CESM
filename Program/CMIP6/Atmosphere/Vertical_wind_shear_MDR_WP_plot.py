@@ -43,13 +43,13 @@ def YearlyConverter(time, data, month_start = 1, month_end = 12):
 
 	if month_end <= 12:
 		#Normal average over a single year, for example, February 100 - December 100
-		time_year		= np.zeros(len(time) / 12)
+		time_year		= np.zeros(int(len(time) / 12))
 
 	else:
 		#If you take the average, for example, over November 100 - May 101
 		#Take year 101 as the average over this period
 		#There is one year less compared to the period analysed
-		time_year		= np.zeros(len(time) / 12 - 1)
+		time_year		= np.zeros(int(len(time) / 12 - 1))
 
 	#-----------------------------------------------------------------------------------------
 	data_year	= ma.masked_all(len(time_year))
@@ -189,7 +189,7 @@ ax.set_xlabel('Zonal vertical wind shear (m s$^{-1}$)')
 ax.set_ylabel('Zonal vertical wind shear difference (m s$^{-1}$)')
 
 ax.legend(loc='upper left', fancybox=True, shadow=False, scatterpoints=1, ncol = 1, prop={'size': 12.5})
-ax.set_title('f) MDR Western Pacific, May - November')
+ax.set_title('d) MDR Western Pacific, May - November')
 
 show()
 

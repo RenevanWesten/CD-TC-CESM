@@ -79,8 +79,6 @@ for model_i in range(len(models)):
 	#Only retain the model names
 	models[model_i]	= models[model_i][len(directory):]
 
-print len(models)
-
 #-----------------------------------------------------------------------------------------
 
 fh = netcdf.Dataset(directory_ERA5+'Atmosphere/Vertical_wind_shear_WP_month_'+str(month_start)+'-'+str(month_end)+'_'+str(year_start_ERA)+'-'+str(year_end_ERA)+'.nc', 'r')
@@ -108,7 +106,6 @@ for period in ['PRESENT', 'FUTURE']:
 	
 	for model_i in range(len(models)):
 		#For each model get the all the files
-		print models[model_i]
 		filename_UVEL		= directory+models[model_i]+'/Atmosphere/Vertical_wind_shear_WP_month_'+str(month_start)+'-'+str(month_end)+'_year_'+str(year_start).zfill(3)+'-'+str(year_end).zfill(3)+'.nc'
 
 		#Get data and fill field for interpolation
@@ -190,7 +187,7 @@ cbar.set_label('Zonal vertical wind shear difference (m s$^{-1}$)')
 CS_2	= m.contour(x, y, vel_present_plot, levels = [12.5], colors = 'gray', linewidths = 2.5, label = '10')
 CS_3	= m.contour(x, y, vel_future_plot, levels = [12.5], colors = 'k', linewidths = 2.5, label = '10')
 
-ax.set_title('d) Zonal vertical wind shear, $\Delta$CMIP6, May - November')
+ax.set_title('b) Zonal vertical wind shear, $\Delta$CMIP6, May - November')
 
 CS1	= m.plot([-1, -1], [-1, -1], linestyle = '-', color = 'gray', linewidth = 2.5, label = '12.5 m s$^{-1}$ (4-8)')
 CS2	= m.plot([-1, -1], [-1, -1], '-k', linewidth = 2.5, label = '12.5 m s$^{-1}$ (94-98)')

@@ -147,6 +147,6 @@ for lat_i in range(len(lat)):
 		
 cbar = m.colorbar(cs, cmap = scalarMap, norm = cNorm, ticks = np.arange(-1, 1.1, 1))
 cbar.set_label('TC trajectory density difference')
-ax.set_title('d) UH-CESM$^{\mathrm{PD}}$ minus IBTrACS v4.0')
+ax.set_title('e) UH-CESM$^{\mathrm{PD}}$ minus IBTrACS v4.0')
 
 show()

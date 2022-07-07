@@ -1,4 +1,4 @@
-#Program plots the NA SSTs difference
+#Program plots the WP SSTs difference
 
 from pylab import *
 import numpy
@@ -23,8 +23,10 @@ temp_future			= ma.masked_all((5, 780, 1102))
 temp_global_present	= ma.masked_all(5)
 temp_global_future	= ma.masked_all(5)
 
-heat_present		= ma.masked_all((5, 220))
-heat_future			= ma.masked_all((5, 220))
+TOA_present		= ma.masked_all((5, 684, 1152))
+TOA_future		= ma.masked_all((5, 684, 1152))
+SHF_present		= ma.masked_all((5, 684, 1152))
+SHF_future		= ma.masked_all((5, 684, 1152))
 #-----------------------------------------------------------------------------------------
 
 for period in ['PRESENT', 'FUTURE']:
@@ -45,23 +47,27 @@ for period in ['PRESENT', 'FUTURE']:
 		
 		fh.close()
 
-		fh 			= netcdf.Dataset(directory+'_'+str(ensemble_number[ensemble_i]).zfill(3)+'/Ocean/AMOC_PAC_HEAT_meridional_month_1-12.nc', 'r')
-		lat_heat	= fh.variables['lat'][:]
-		heat		= np.mean(fh.variables['HEAT_PAC'][:], axis = 0)	
-	
+		fh 			= netcdf.Dataset(directory+'_'+str(ensemble_number[ensemble_i]).zfill(3)+'/Atmosphere/TOA_SHF_month_1-12.nc', 'r')
+		lon_2		= fh.variables['lon'][:]
+		lat_2		= fh.variables['lat'][:]
+		TOA			= fh.variables['TOA'][:]
+		SHF			= fh.variables['SHF'][:]
+
 		fh.close()
 
 		if ensemble_number[ensemble_i] <= 5:
 			#Present-day ensemble
 			temp_present[ensemble_i]		= temp
 			temp_global_present[ensemble_i]	= temp_global
-			heat_present[ensemble_i]		= heat
+			TOA_present[ensemble_i]			= TOA
+			SHF_present[ensemble_i]			= SHF
 
 		else:
 			#Future ensemble
 			temp_future[ensemble_i]			= temp
 			temp_global_future[ensemble_i]	= temp_global
-			heat_future[ensemble_i]			= heat
+			TOA_future[ensemble_i]			= TOA
+			SHF_future[ensemble_i]			= SHF
 
 #-----------------------------------------------------------------------------------------
 
@@ -73,19 +79,35 @@ temp_global_future	= np.mean(temp_global_future, axis = 0)
 temp_future_plot	= temp_future - temp_present_plot - (temp_global_future - temp_global_present)
 print('Global mean SST increase:', temp_global_future - temp_global_present)
 
-heat_present	= np.mean(heat_present, axis = 0)
-heat_future		= np.mean(heat_future, axis = 0)
+TOA_present_plot	= np.mean(TOA_present, axis = 0)
+TOA_future_plot		= np.mean(TOA_future, axis = 0)
+SHF_present_plot	= np.mean(SHF_present, axis = 0)
+SHF_future_plot		= np.mean(SHF_future, axis = 0)
 
-lat_min			= -3
-lat_max			= 61
+TOA_plot		= TOA_future_plot - TOA_present_plot
+SHF_plot		= -(SHF_future_plot - SHF_present_plot)
+NET_plot		= TOA_plot + ma.filled(SHF_plot, fill_value = 0.0)
+NET_plot		= ma.masked_array(NET_plot, mask = SHF_plot.mask)
 
-lat_min_index	= (fabs(lat_heat - lat_min)).argmin()
-lat_max_index	= (fabs(lat_heat - lat_max)).argmin() + 1
-lat_heat		= lat_heat[lat_min_index:lat_max_index]
-heat_plot		= heat_future[lat_min_index:lat_max_index] - heat_present[lat_min_index:lat_max_index]
+lon_min			= 100
+lon_max			= 180
+lat_min			= -3.1
+lat_max			= 61.1
+
+lon_min_index	= (fabs(lon_2 - lon_min)).argmin()
+lon_max_index	= (fabs(lon_2 - lon_max)).argmin() + 1
+lat_min_index	= (fabs(lat_2 - lat_min)).argmin()
+lat_max_index	= (fabs(lat_2 - lat_max)).argmin() + 1
+
+
+lat_heat		= lat_2[lat_min_index:lat_max_index]
+heat_plot		= np.mean(NET_plot[lat_min_index:lat_max_index, lon_min_index:lon_max_index], axis = 1)
 
 y_heat			= np.log(np.tan(np.pi/4.0 + lat_heat * np.pi / (2.0 * 180)))
-ticks_heat		= np.where(lat_heat % 10.0 == 0)[0]
+ticks_heat		= np.log(np.tan(np.pi/4.0 + np.arange(0, 61, 10) * np.pi / (2.0 * 180)))
+y_heat_min		= np.log(np.tan(np.pi/4.0 + -3 * np.pi / (2.0 * 180)))
+y_heat_max		= np.log(np.tan(np.pi/4.0 + 61 * np.pi / (2.0 * 180)))
+
 #-----------------------------------------------------------------------------------------
 
 #Rescale the temperature plot
@@ -120,24 +142,24 @@ legend_1      = ax.legend(graphs, legend_labels, loc = (0.12, 0.81), ncol=1, num
 
 ax2 = fig.add_axes([0.125, 0.146, 0.075, 0.707])
 
-ax2.set_xlim(-0.25, 0.25)
-ax2.set_ylim(y_heat[0], y_heat[-1])
+ax2.set_xlim(-25, 25)
+ax2.set_ylim(y_heat_min, y_heat_max)
 ax2.plot(heat_plot, y_heat, '-k', linewidth = 2.0)
 ax2.fill_betweenx(y_heat, 0, heat_plot, where=heat_plot >= 0, facecolor='red')
 ax2.fill_betweenx(y_heat, 0, heat_plot, where=heat_plot <= 0, facecolor='deepskyblue')
 
 
 for tick_i in ticks_heat:
-	ax2.axhline(y = y_heat[tick_i], color = 'k', linestyle = ':')
+	ax2.axhline(y = tick_i, color = 'k', linestyle = ':')
 
 ax2.axvline(x = 0, color = 'k', linestyle = ':')
 
-ax2.set_xticks([-0.25, 0, 0.25])
-ax2.set_yticks(y_heat[ticks_heat])
+ax2.set_xticks([-25, 0, 25])
+ax2.set_yticks(ticks_heat)
 ax2.set_xticklabels([])
 ax2.set_yticklabels([])
 
-ax.set_title('a) Sea surface temperature and meridional heat transport')
+ax.set_title('b) Sea surface temperature, $\Delta$UH-CESM')
 
 show()
 

@@ -137,7 +137,7 @@ ax2.set_xticks([datetime.datetime(2002, 1, 1).toordinal(),
 ax2.set_ylim(-0.5, 0.5)
 ax2.grid()
 		
-ax.set_title('c) Sea surface temperature, UH-CESM$^{\mathrm{PD}}$')
+ax.set_title('e) Sea surface temperature, UH-CESM$^{\mathrm{PD}}$')
 
 #-----------------------------------------------------------------------------------------
 
@@ -187,6 +187,6 @@ ax2.set_xticks([datetime.datetime(2092, 1, 1).toordinal(),
 ax2.set_ylim(-0.5, 0.5)
 ax2.grid()
 
-ax.set_title('d) Sea surface temperature, UH-CESM$^{\mathrm{F}}$')
+ax.set_title('f) Sea surface temperature, UH-CESM$^{\mathrm{F}}$')
 
 show()

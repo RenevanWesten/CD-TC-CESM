@@ -22,11 +22,12 @@ year_end	= 2017
 fh = netcdf.Dataset(directory+'IBTrACS.since1980.v04r00.nc', 'r')
 
 number	= fh.variables['number'][:]
-lon		= fh.variables['lon'][:]
-lat		= fh.variables['lat'][:]
+lon	    = fh.variables['lon'][:]
+lat	    = fh.variables['lat'][:]
 time	= fh.variables['iso_time'][:]
-wind	= fh.variables['wmo_wind'][:] * 0.5144444444	#Convert to m/s
+wind	= fh.variables['wmo_wind'][:] * 0.5144444444
 agency	= fh.variables['wmo_agency'][:]
+pres	= fh.variables['wmo_pres'][:]
 nature	= fh.variables['nature'][:]
 
 fh.close()
@@ -44,10 +45,11 @@ for storm_i in range(len(number)):
 		continue
 
 	#Get the current track information
-	time_storm		= time[storm_i]
-	lon_storm		= lon[storm_i]
-	lat_storm		= lat[storm_i]
-	wind_storm		= wind[storm_i]
+	time_storm	= time[storm_i]
+	lon_storm	= lon[storm_i]
+	lat_storm	= lat[storm_i]
+	wind_storm	= wind[storm_i]
+	pres_storm	= pres[storm_i]
 	nature_storm	= nature[storm_i]
 	agency_storm	= agency[storm_i]
 
@@ -57,22 +59,22 @@ for storm_i in range(len(number)):
 		continue
 
 	#Get only the relevant points
-	time_storm		= time_storm[index]
-	lon_storm		= lon_storm[index]
-	lat_storm		= lat_storm[index]
-	wind_storm		= wind_storm[index]
+	time_storm	= time_storm[index]
+	lon_storm	= lon_storm[index]
+	lat_storm	= lat_storm[index]
+	wind_storm	= wind_storm[index]
+	pres_storm	= pres_storm[index]
 	nature_storm	= nature_storm[index]
 	agency_storm	= agency_storm[index]
 
 	#Set the correct toordinal time form
 	time_storm_2	= np.zeros(len(time_storm))
-	
 	for time_i in range(len(time_storm)):
 		#Read in the time stamp
-		year_storm		= int(time_storm[time_i, 0] + time_storm[time_i, 1] + time_storm[time_i, 2] + time_storm[time_i, 3])
-		month_storm		= int(time_storm[time_i, 5] + time_storm[time_i, 6])
-		day_storm		= int(time_storm[time_i, 8] + time_storm[time_i, 9])
-		hour_storm		= int(time_storm[time_i, 11] + time_storm[time_i, 12])
+		year_storm	= int(time_storm[time_i, 0] + time_storm[time_i, 1] + time_storm[time_i, 2] + time_storm[time_i, 3])
+		month_storm	= int(time_storm[time_i, 5] + time_storm[time_i, 6])
+		day_storm	= int(time_storm[time_i, 8] + time_storm[time_i, 9])
+		hour_storm	= int(time_storm[time_i, 11] + time_storm[time_i, 12])
 		minute_storm	= int(time_storm[time_i, 14] + time_storm[time_i, 15])
 		second_storm	= int(time_storm[time_i, 17] + time_storm[time_i, 18])
 
@@ -83,12 +85,10 @@ for storm_i in range(len(number)):
 	for time_i in range(len(time_storm)):	
 		index		= np.where(agency_storm[time_i].mask == False)[0]
 		agency_time	= ''
-		
 		for i in range(len(index)): 
 			agency_time += agency_storm[time_i, index[i]].decode('utf-8')
 		
 		if agency_time == 'hurdat_atl' or agency_time == 'hurdat_epa' or agency_time == 'atcf' or agency_time == 'cphc' or agency_time == 'newdelhi':
-			#Is already in 1-minute maximum sustained wind speed
 			pass
 
 		elif agency_time == 'wellington' or agency_time == 'nadi' or agency_time == 'tokyo' or agency_time == 'bom' or agency_time == 'reunion':
@@ -105,7 +105,6 @@ for storm_i in range(len(number)):
 		system		= nature_storm[time_i, 0].decode('utf-8') + nature_storm[time_i, 1].decode('utf-8')
 
 		if len(time_index) == 0:
-			#Start tracking after first Tropical Storm classification
 			if system == 'TS':
 				time_index.append(time_i)
 
@@ -126,16 +125,18 @@ for storm_i in range(len(number)):
 	lon_storm	= lon_storm[time_index]
 	lat_storm	= lat_storm[time_index]
 	wind_storm	= wind_storm[time_index]
+	pres_storm	= pres_storm[time_index]
 
 	#Check whether longitude has negative values, set to 0 - 360E
 	lon_storm[lon_storm < 0] = lon_storm[lon_storm < 0] + 360
 
 	#Save the track data
-	data_track	= ma.masked_all((len(time_storm), 4))
+	data_track	= ma.masked_all((len(time_storm), 5))
 	data_track[:, 0]= time_storm
 	data_track[:, 1]= lon_storm
 	data_track[:, 2]= lat_storm
 	data_track[:, 3]= wind_storm
+	data_track[:, 4]= pres_storm
 
 	#Initiate new track
 	exec('TRACK_ID_'+str(counter)+' = data_track')
@@ -159,7 +160,7 @@ for track_i in range(counter):
 #Raise time max by 1 (easy to remove masked objects for post-processing)
 time_max	+= 1
 
-track_all	= ma.masked_all((counter, time_max, 4))
+track_all	= ma.masked_all((counter, time_max, 5))
 
 for track_i in range(counter):
 	#Save data to general array
@@ -172,7 +173,7 @@ fh = netcdf.Dataset(directory+'IBTrACS_TC_tracks_year_'+str(year_start)+'-'+str(
 
 fh.createDimension('track_number', len(track_all))
 fh.createDimension('time', time_max)
-fh.createDimension('data', 4)
+fh.createDimension('data', 5)
 
 fh.createVariable('track_number', float, ('track_number'), zlib=True)
 fh.createVariable('time', float, ('time'), zlib=True)
@@ -180,13 +181,13 @@ fh.createVariable('data', float, ('data'), zlib=True)
 fh.createVariable('TC_tracks', float, ('track_number', 'time', 'data'), zlib=True)
 
 fh.variables['track_number'].longname 	= 'Track number'
-fh.variables['time'].longname 			= 'Lifetime TC'
-fh.variables['data'].longname 			= 'Time, lon (RV), lat (RV), Wind speed (1-min)'
+fh.variables['time'].longname 		= 'Lifetime TC'
+fh.variables['data'].longname 		= 'Time, lon (RV), lat (RV), Wind speed (1-min), Pressure (hPa)'
 
 #Writing data to correct variable	
 fh.variables['track_number'][:] 	= np.arange(len(track_all)) + 1
-fh.variables['time'][:] 			= np.arange(time_max)
-fh.variables['data'][:] 			= np.arange(4)
+fh.variables['time'][:] 		= np.arange(time_max)
+fh.variables['data'][:] 		= np.arange(5)
 fh.variables['TC_tracks'][:] 		= track_all
 
 

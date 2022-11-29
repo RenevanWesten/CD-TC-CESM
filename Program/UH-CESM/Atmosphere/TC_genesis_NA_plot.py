@@ -1,4 +1,4 @@
-#Plots the TCs genesis month
+#Plots the TCs genesis PDF
 
 from pylab import *
 import numpy
@@ -108,6 +108,11 @@ field_future	= np.zeros((len(lat), len(lon)))
 
 #-----------------------------------------------------------------------------------------
 
+lon_TC_present_all		= []
+lat_TC_present_all		= []
+lon_TC_future_all		= []
+lat_TC_future_all		= []
+
 for ensemble_i in range(1, 11):
 	#Add genesis latitidue for the North Atlantic
 	fh = netcdf.Dataset(directory+'_'+str(ensemble_i).zfill(3)+'/Atmosphere/TC_tracker.nc', 'r')
@@ -128,25 +133,43 @@ for ensemble_i in range(1, 11):
 
 		if ensemble_i <= 5:
 			field_present[lat_index, lon_index] += 1.0
+			lon_TC_present_all.append(lon_TC)
+			lat_TC_present_all.append(lat_TC)
 
 		if ensemble_i >= 6:
 			field_future[lat_index, lon_index] += 1.0
-
+			lon_TC_future_all.append(lon_TC)
+			lat_TC_future_all.append(lat_TC)
+			
 #Normalise
 field_present	= field_present / np.sum(field_present)
 field_future	= field_future / np.sum(field_future)
+field_diff		= field_future - field_present
+
+#Take the average position
+lon_TC_present_all		= np.mean(lon_TC_present_all)
+lat_TC_present_all		= np.mean(lat_TC_present_all)
+lon_TC_future_all		= np.mean(lon_TC_future_all)
+lat_TC_future_all		= np.mean(lat_TC_future_all)
 
 #-----------------------------------------------------------------------------------------
 
-cNorm  		= colors.Normalize(vmin=0, vmax= 0.15) 			#Probablility
+cNorm  		= colors.Normalize(vmin=0, vmax=0.15) 			#Probablility
 scalarMap 	= cm.ScalarMappable(norm=cNorm, cmap='Spectral_r') 	#Using colormap
 
+cNorm_2 	= colors.Normalize(vmin=-0.1, vmax=0.1) 			#Probablility
+scalarMap_2 = cm.ScalarMappable(norm=cNorm_2, cmap='RdBu_r') 	#Using colormap
 #-----------------------------------------------------------------------------------------
 
 fig, ax	= subplots()	
 x, y 	= np.meshgrid(lon, lat)
 levels 	= np.arange(0, 0.16, 0.01)
 cs 	= contourf(x,y, field_present, levels, extend = 'max', cmap='Spectral_r', norm=cNorm)
+
+fig, ax	= subplots()	
+x, y 	= np.meshgrid(lon, lat)
+levels 	= np.arange(-0.1, 0.11, 0.01)
+cs2 	= contourf(x,y, field_diff, levels, extend = 'both', cmap='RdBu_r', norm=cNorm_2)
 
 fig, ax	= subplots(figsize = (8, 6))
 
@@ -174,7 +197,7 @@ for lat_i in range(len(lat)):
 		
 cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.16, 0.05))
 cbar.set_label('TC genesis PDF')
-ax.set_title('a) North Atlantic, UH-CESM$^{\mathrm{PD}}$ ')
+ax.set_title('a) TC genesis location, UH-CESM$^{\mathrm{PD}}$')
 
 #-----------------------------------------------------------------------------------------
 
@@ -199,12 +222,48 @@ for lat_i in range(len(lat)):
 		x4,y4 = m(lon[lon_i] + deviation, lat[lat_i] - deviation) #Bottom right
 		color_count =  scalarMap.to_rgba(field_future[lat_i, lon_i])
 		p = Polygon([(x1,y1),(x2,y2),(x3,y3),(x4,y4)],facecolor=color_count, linewidth=0) 
-		plt.gca().add_patch(p) 
-		
+		ax.add_patch(p) 
 		
 cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.16, 0.05))
 cbar.set_label('TC genesis PDF')
-ax.set_title('b) North Atlantic, UH-CESM$^{\mathrm{F}}$ ')
+ax.set_title('b) TC genesis location, UH-CESM$^{\mathrm{F}}$')
+
+
+
+ax2 = fig.add_axes([0.18, 0.45, 0.54, 0.40])
+
+m2 = Basemap(projection = 'merc', llcrnrlat=-3, urcrnrlat=31, llcrnrlon=250, urcrnrlon=360.0001, resolution='i', ax=ax2) 
+m2.drawcoastlines()
+
+par = m2.drawparallels(np.arange(-80,80,10),labels=[0,0,0,0])
+mer = m2.drawmeridians(np.arange(0,360.1,20),labels=[0,0,0,0])
+
+for lat_i in range(len(lat)):
+	for lon_i in range(len(lon)):
+		if field_future[lat_i, lon_i] == 0 and field_present[lat_i, lon_i] == 0:
+			continue
+
+		x1,y1 = m2(lon[lon_i] - deviation, lat[lat_i] - deviation) #Bottom left
+		x2,y2 = m2(lon[lon_i] - deviation, lat[lat_i] + deviation) #Top left
+		x3,y3 = m2(lon[lon_i] + deviation, lat[lat_i] + deviation) #Top right
+		x4,y4 = m2(lon[lon_i] + deviation, lat[lat_i] - deviation) #Bottom right
+		color_count =  scalarMap_2.to_rgba(field_diff[lat_i, lon_i])
+		p = Polygon([(x1,y1),(x2,y2),(x3,y3),(x4,y4)],facecolor=color_count, linewidth=0) 
+		ax2.add_patch(p)
+
+x, y	= m2(lon_TC_present_all, lat_TC_present_all)
+graph_1	= m2.plot(x, y, 'oc', markersize = 10, label = 'UH-CESM$^{\mathrm{PD}}$')
+x, y	= m2(lon_TC_future_all, lat_TC_future_all)
+graph_2	= m2.plot(x, y, 'sc', markersize = 10, label = 'UH-CESM$^{\mathrm{F}}$')
+
+graphs	= graph_1 + graph_2
+
+legend_labels = [l.get_label() for l in graphs]
+legend_1      = ax2.legend(graphs, legend_labels, loc = (-0.08, -0.3), ncol=1, numpoints = 1, prop ={'size': 12})
+
+cbar = m2.colorbar(cs2,location='right',pad="4%", cmap = scalarMap_2, norm = cNorm_2, ticks = np.arange(-0.1, 0.11, 0.1))
+cbar.set_label('PDF difference')
+ax2.set_title('TC genesis location, $\Delta$UH-CESM')
 
 show()
 

@@ -150,10 +150,10 @@ track_ibtracs_total	= len(track_all) / 25.0
 #-----------------------------------------------------------------------------------------
 #Determine the difference in TC density (scaled to global TC rate)
 field_diff		= (field_present / track_cesm_present_total) -  (field_obs / track_ibtracs_total)
-field_cesm_diff	= (field_future / track_cesm_future_total) -  (field_present / track_cesm_present_total)
 cNorm  			= colors.Normalize(vmin=-1, vmax= 1.0) 		#Probablility
 scalarMap 		= cm.ScalarMappable(norm=cNorm, cmap='RdBu_r') 	#Using colormap
 
+#-----------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------
 
 fig, ax	= subplots()	
@@ -184,17 +184,35 @@ for lat_i in range(len(lat)):
 		color_count =  scalarMap.to_rgba(field_diff[lat_i, lon_i])
 		p = Polygon([(x1,y1),(x2,y2),(x3,y3),(x4,y4)],facecolor=color_count, linewidth=0) 
 		plt.gca().add_patch(p) 		
-		
+	
 cbar = m.colorbar(cs, cmap = scalarMap, norm = cNorm, ticks = np.arange(-1, 1.1, 1))
 cbar.set_label('TC trajectory density difference')
 ax.set_title('e) UH-CESM$^{\mathrm{PD}}$ minus IBTrACS v4.0')
 
 #-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+
+#Determine the difference in TC density (scaled to global TC rate)
+field_cesm_diff	= (field_future / track_cesm_future_total) -  (field_present / track_cesm_present_total)
+cNorm_2  		= colors.Normalize(vmin=-0.7/3., vmax= 0.7/3.) 		#Probablility
+scalarMap_2		= cm.ScalarMappable(norm=cNorm_2, cmap='RdBu_r') 	#Using colormap
 
 fig, ax	= subplots()	
 x, y 	= np.meshgrid(lon, lat)
-levels 	= np.arange(-1, 1.1, 0.1)
-cs 	= contourf(x,y, field_cesm_diff, levels, extend = 'both', cmap='RdBu_r', norm=cNorm)
+levels 	= np.arange(-0.7/3., 0.7/3. + 0.0001, 0.1/3)
+
+cs_2 	= contourf(x,y, field_cesm_diff, levels, extend = 'both', cmap='RdBu_r', norm=cNorm_2)
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+#Rescale the CESM difference plot
+scale				= 3
+cut_off				= 0.1
+field_cesm_diff[field_cesm_diff < -cut_off]	= (field_cesm_diff[field_cesm_diff < -cut_off] - -cut_off) / scale - cut_off
+field_cesm_diff[field_cesm_diff > cut_off]	= (field_cesm_diff[field_cesm_diff > cut_off] - cut_off) / scale + cut_off
+
+#-----------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 
 fig, ax	= subplots(figsize = (14, 8))
 
@@ -209,18 +227,20 @@ deviation 	= grid_size / 2.0 - 0.2
 
 for lat_i in range(len(lat)):
 	for lon_i in range(len(lon)):
-		if field_diff[lat_i, lon_i] == 0:
+		if field_cesm_diff[lat_i, lon_i] == 0:
 			continue
 
 		x1,y1 = m(lon[lon_i] - deviation, lat[lat_i] - deviation) #Bottom left
 		x2,y2 = m(lon[lon_i] - deviation, lat[lat_i] + deviation) #Top left
 		x3,y3 = m(lon[lon_i] + deviation, lat[lat_i] + deviation) #Top right
 		x4,y4 = m(lon[lon_i] + deviation, lat[lat_i] - deviation) #Bottom right
-		color_count =  scalarMap.to_rgba(field_cesm_diff[lat_i, lon_i])
+		color_count =  scalarMap_2.to_rgba(field_cesm_diff[lat_i, lon_i])
 		p = Polygon([(x1,y1),(x2,y2),(x3,y3),(x4,y4)],facecolor=color_count, linewidth=0) 
 		plt.gca().add_patch(p) 		
 		
-cbar = m.colorbar(cs, cmap = scalarMap, norm = cNorm, ticks = np.arange(-1, 1.1, 1))
+cbar = m.colorbar(cs_2, cmap = scalarMap_2, norm = cNorm_2, ticks = [-0.7/3, -0.5/3, -0.3/3, 0, 0.3/3, 0.5/3, 0.7/3])
+cbar.ax.set_yticklabels([-0.5, -0.3, -0.1, 0, 0.1, 0.3, 0.5])
+
 cbar.set_label('TC trajectory density difference')
 ax.set_title('d) $\Delta$UH-CESM')
 

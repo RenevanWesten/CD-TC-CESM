@@ -9,7 +9,7 @@ import math
 import netCDF4 as netcdf
 import matplotlib.colors as colors
 from scipy import stats
-from mpl_toolkits.basemap import Basemap
+
 
 #Making pathway to folder with all data
 directory 		= '../../../Data/UH-CESM'
@@ -140,8 +140,8 @@ for ensemble_i in range(1, 11):
 			lat_TC_future_all.append(lat_TC)
 
 #Normalise
-field_present	= field_present / np.sum(field_present)
-field_future	= field_future / np.sum(field_future)
+field_present	= field_present / 25.0
+field_future	= field_future / 25.0
 field_diff		= field_future - field_present
 
 #Take the average position
@@ -149,24 +149,23 @@ lon_TC_present_all		= np.mean(lon_TC_present_all)
 lat_TC_present_all		= np.mean(lat_TC_present_all)
 lon_TC_future_all		= np.mean(lon_TC_future_all)
 lat_TC_future_all		= np.mean(lat_TC_future_all)
-
 #-----------------------------------------------------------------------------------------
 
-cNorm  		= colors.Normalize(vmin=0, vmax= 0.15) 			#Probablility
+cNorm  		= colors.Normalize(vmin=0, vmax=0.8) 			#Probablility
 scalarMap 	= cm.ScalarMappable(norm=cNorm, cmap='Spectral_r') 	#Using colormap
 
-cNorm_2 	= colors.Normalize(vmin=-0.1, vmax=0.1) 			#Probablility
+cNorm_2 	= colors.Normalize(vmin=-0.4, vmax=0.4) 			#Probablility
 scalarMap_2 = cm.ScalarMappable(norm=cNorm_2, cmap='RdBu_r') 	#Using colormap
 #-----------------------------------------------------------------------------------------
 
 fig, ax	= subplots()	
 x, y 	= np.meshgrid(lon, lat)
-levels 	= np.arange(0, 0.16, 0.01)
+levels 	= np.arange(0, 0.801, 0.025)
 cs 	= contourf(x,y, field_present, levels, extend = 'max', cmap='Spectral_r', norm=cNorm)
 
 fig, ax	= subplots()	
 x, y 	= np.meshgrid(lon, lat)
-levels 	= np.arange(-0.1, 0.11, 0.01)
+levels 	= np.arange(-0.4, 0.41, 0.04)
 cs2 	= contourf(x,y, field_diff, levels, extend = 'both', cmap='RdBu_r', norm=cNorm_2)
 
 fig, ax	= subplots(figsize = (8, 6))
@@ -193,8 +192,8 @@ for lat_i in range(len(lat)):
 		plt.gca().add_patch(p) 
 		
 		
-cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.16, 0.05))
-cbar.set_label('TC genesis PDF')
+cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.801, 0.2))
+cbar.set_label('TC genesis frequency (yr$^{-1}$)')
 ax.set_title('a) TC genesis location, UH-CESM$^{\mathrm{PD}}$')
 
 #-----------------------------------------------------------------------------------------
@@ -223,8 +222,8 @@ for lat_i in range(len(lat)):
 		plt.gca().add_patch(p) 
 		
 		
-cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.16, 0.05))
-cbar.set_label('TC genesis PDF')
+cbar = m.colorbar(cs,location='right',pad="4%", cmap = scalarMap, norm = cNorm, ticks = np.arange(0, 0.801, 0.2))
+cbar.set_label('TC genesis frequency (yr$^{-1}$)')
 ax.set_title('b) TC genesis location, UH-CESM$^{\mathrm{F}}$')
 
 ax2 = fig.add_axes([0.18, 0.45, 0.54, 0.40])
@@ -258,8 +257,8 @@ graphs	= graph_1 + graph_2
 legend_labels = [l.get_label() for l in graphs]
 legend_1      = ax2.legend(graphs, legend_labels, loc = (-0.08, -0.3), ncol=1, numpoints = 1, prop ={'size': 12})
 
-cbar = m2.colorbar(cs2,location='right',pad="4%", cmap = scalarMap_2, norm = cNorm_2, ticks = np.arange(-0.1, 0.11, 0.1))
-cbar.set_label('PDF difference')
+cbar = m2.colorbar(cs2,location='right',pad="4%", cmap = scalarMap_2, norm = cNorm_2, ticks = np.arange(-0.4, 0.41, 0.4))
+cbar.set_label('TC gen. diff. (yr$^{-1}$)')
 ax2.set_title('TC genesis location, $\Delta$UH-CESM')
 
 show()

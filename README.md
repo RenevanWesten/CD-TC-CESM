@@ -1,6 +1,6 @@
 # CD-TC-CESM
 
-Mechanisms of Tropical Cyclone Response under Climate Change in the Community Earth System Model, resubmitted to Climate Dynamics (5 January 2023)
+Mechanisms of Tropical Cyclone Response under Climate Change in the Community Earth System Model, Climate Dynamics (https://doi.org/10.1007/s00382-023-06680-3)
 
 René M. van Westen, Henk A. Dijkstra and Nadia Bloemendaal
 
